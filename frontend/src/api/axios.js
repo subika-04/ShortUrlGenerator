@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL:VITE_API_URL,
+  baseURL:'https://shorturlgenerator-4hbz.onrender.com',
   withCredentials: true,
 });
 
