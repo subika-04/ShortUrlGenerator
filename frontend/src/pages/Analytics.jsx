@@ -25,7 +25,8 @@ const CustomTooltip = ({ active, payload, label }) => {
   }
   return null;
 };
-
+const visitCount = await Visit.countDocuments({});
+console.log("Debug - Total visits in collection:", visitCount);
 const formatDate = (date) => {
   if (!date) return '—';
   return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
