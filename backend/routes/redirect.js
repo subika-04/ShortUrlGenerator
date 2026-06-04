@@ -25,6 +25,7 @@ const getLocationFromIP = (ip) => {
 };
 
 router.get('/:shortCode', async (req, res) => {
+    console.log("REDIRECT HIT:", req.params.shortCode);
   const { shortCode } = req.params;
 
   if (shortCode.startsWith('api') || shortCode === 'favicon.ico') {
