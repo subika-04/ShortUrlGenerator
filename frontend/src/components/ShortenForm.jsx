@@ -9,6 +9,16 @@ function ShortenForm({ onSuccess }) {
   const [expiryTime, setExpiryTime] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [suspendFrom, setSuspendFrom] = useState('');
+const [suspendFromTime, setSuspendFromTime] = useState('');
+const [suspendUntil, setSuspendUntil] = useState('');
+const [suspendUntilTime, setSuspendUntilTime] = useState('');
+
+// In the handleSubmit payload:
+if (suspendFrom) payload.suspendFrom = suspendFrom;
+if (suspendFromTime) payload.suspendFromTime = suspendFromTime;
+if (suspendUntil) payload.suspendUntil = suspendUntil;
+if (suspendUntilTime) payload.suspendUntilTime = suspendUntilTime;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

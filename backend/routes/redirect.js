@@ -5,6 +5,27 @@ const Visit = require('../models/Visit');
 const geoip = require('geoip-lite');
 const { getDeviceType, getBrowser, getOperatingSystem, isUrlExpired } = require('../controllers/urlController');
 
+// ✅ Helper: Check if URL is suspended for a period
+const isUrlSuspended = (url) => {
+  if (!url.suspendFrom || !url.suspendUntil) return false;
+  
+  const now = new Date();
+  let suspendFrom = new Date(url.suspendFrom);
+  let suspendUntil = new Date(url.suspendUntil);
+  
+  if (url.suspendFromTime) {
+    const [hours, minutes] = url.suspendFromTime.split(':');
+    suspendFrom.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  }
+  
+  if (url.suspendUntilTime) {
+    const [hours, minutes] = url.suspendUntilTime.split(':');
+    suspendUntil.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  }
+  
+  return now >= suspendFrom && now <= suspendUntil;
+};
+
 const getLocationFromIP = (ip) => {
   try {
     if (!ip || ip.startsWith('127.') || ip.startsWith('10.') || ip.startsWith('192.168') || ip.startsWith('172.')) {
@@ -25,7 +46,7 @@ const getLocationFromIP = (ip) => {
 };
 
 router.get('/:shortCode', async (req, res) => {
-    console.log("REDIRECT HIT:", req.params.shortCode);
+  console.log("REDIRECT HIT:", req.params.shortCode);
   const { shortCode } = req.params;
 
   if (shortCode.startsWith('api') || shortCode === 'favicon.ico') {
@@ -38,8 +59,14 @@ router.get('/:shortCode', async (req, res) => {
       return res.status(404).json({ message: 'Short URL not found.' });
     }
 
+    // ✅ Check if expired
     if (isUrlExpired(url)) {
       return res.status(410).json({ message: 'This link has expired.', isExpired: true });
+    }
+
+    // ✅ Check if suspended
+    if (isUrlSuspended(url)) {
+      return res.status(403).json({ message: 'This link is currently suspended.', isSuspended: true });
     }
 
     const forwardedIP = req.headers['x-forwarded-for'];
@@ -56,7 +83,7 @@ router.get('/:shortCode', async (req, res) => {
     const existingVisit = await Visit.findOne({ urlId: url._id, fingerprint: fingerprint });
     const isUnique = !existingVisit;
 
-    // ✅ Try-catch with detailed error
+    // Create visit
     try {
       const visit = await Visit.create({
         urlId: url._id,

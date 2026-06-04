@@ -50,6 +50,22 @@ const urlSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    suspendFrom: {
+  type: Date,
+  default: null,
+},
+suspendFromTime: {
+  type: String,
+  default: null,
+},
+suspendUntil: {
+  type: Date,
+  default: null,
+},
+suspendUntilTime: {
+  type: String,
+  default: null,
+},
   },
   { timestamps: true }
 );

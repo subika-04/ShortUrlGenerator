@@ -460,3 +460,23 @@ const bulkShorten = async (req, res) => {
   }
 };
 
+// Check if URL is suspended
+const isUrlSuspended = (url) => {
+  if (!url.suspendFrom || !url.suspendUntil) return false;
+  
+  const now = new Date();
+  let suspendFrom = new Date(url.suspendFrom);
+  let suspendUntil = new Date(url.suspendUntil);
+  
+  if (url.suspendFromTime) {
+    const [hours, minutes] = url.suspendFromTime.split(':');
+    suspendFrom.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  }
+  
+  if (url.suspendUntilTime) {
+    const [hours, minutes] = url.suspendUntilTime.split(':');
+    suspendUntil.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  }
+  
+  return now >= suspendFrom && now <= suspendUntil;
+};
