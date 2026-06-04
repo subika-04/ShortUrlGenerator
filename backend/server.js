@@ -35,6 +35,19 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal server error', error: err.message });
 });
 
+// Add this right after health check:
+app.get('/api/debug', (req, res) => {
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      routes.push({
+        path: middleware.route.path,
+        methods: Object.keys(middleware.route.methods)
+      });
+    }
+  });
+  res.json({ routes });
+});
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
 
