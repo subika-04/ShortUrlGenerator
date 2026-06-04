@@ -21,10 +21,21 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'URL Shortener API is running' });
 });
+// Try loading routes and catch any errors
+try {
+  app.use('/api/auth', authRoutes);
+  console.log('✅ Auth routes loaded');
+} catch (e) {
+  console.error('❌ Auth routes error:', e.message);
+}
 
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/url', urlRoutes);
+try {
+  app.use('/api/url', urlRoutes);  
+  console.log('✅ URL routes loaded');
+} catch (e) {
+  console.error('❌ URL routes error:', e.message);
+}
+
 
 // Redirect route (must be last)
 app.use('/', redirectRoute);
