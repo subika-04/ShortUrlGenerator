@@ -106,7 +106,34 @@ export default function Dashboard() {
 
       {/* Main content — offset on lg+ to account for sidebar */}
       <div className="lg:pl-72 flex flex-col min-h-screen">
-        <Navbar onMenuClick={() => setSidebarOpen(prev => !prev)} />
+
+        {/* Navbar — hidden below lg breakpoint (≥1024px), visible on desktop */}
+        <div className="hidden lg:block">
+          <Navbar onMenuClick={() => setSidebarOpen(prev => !prev)} />
+        </div>
+
+        {/* Mobile top bar — visible only below lg, replaces Navbar */}
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-white dark:bg-dark-800 border-b border-surface-200 dark:border-dark-700 sticky top-0 z-10">
+          <button
+            onClick={() => setSidebarOpen(prev => !prev)}
+            className="p-2 rounded-lg bg-surface-100 dark:bg-dark-700 text-surface-700 dark:text-dark-300 hover:bg-surface-200 dark:hover:bg-dark-600 transition-colors"
+            aria-label="Open menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+
+          {/* Brand / logo in center */}
+          <span className="text-base font-display font-bold text-surface-900 dark:text-white tracking-tight">
+            Dashboard
+          </span>
+
+          {/* Right slot — placeholder to keep title centered */}
+          <div className="w-9" />
+        </div>
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full mx-auto">
 
@@ -130,18 +157,8 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              {/* Mobile menu toggle (lg already handled by sidebar always showing) */}
-              <button
-                onClick={() => setSidebarOpen(prev => !prev)}
-                className="lg:hidden flex-shrink-0 p-2 rounded-lg bg-surface-200 dark:bg-dark-700 text-surface-700 dark:text-dark-300 hover:bg-surface-300 dark:hover:bg-dark-600 transition-colors"
-                aria-label="Toggle sidebar"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              </button>
+              {/* Spacer — hamburger now lives in the sticky mobile top bar */}
+              <div className="lg:hidden w-9" />
             </div>
           </motion.div>
 
