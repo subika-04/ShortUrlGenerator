@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [sidebarOpen, setSidebarOpen] = useState(false); // default closed on mobile
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
 
   const fetchUrls = async () => {
@@ -35,10 +35,7 @@ export default function Dashboard() {
     fetchUrls();
   }, []);
 
-  // Close sidebar on mobile when route changes or overlay clicked
-  const handleOverlayClick = () => {
-    if (window.innerWidth < 1024) setSidebarOpen(false);
-  };
+  const handleOverlayClick = () => setSidebarOpen(false);
 
   const handleSuccess = (newUrl) => {
     setUrls(prev => [newUrl, ...prev]);
@@ -48,13 +45,11 @@ export default function Dashboard() {
   const handleUpdate = (updated) =>
     setUrls(prev => prev.map(u => u._id === updated._id ? { ...u, ...updated } : u));
 
-  // Stats
   const totalClicks = urls.reduce((s, u) => s + u.clickCount, 0);
   const activeUrls = urls.filter(u => u.isActive).length;
   const totalUrls = urls.length;
   const topUrl = urls.reduce((best, u) => (!best || u.clickCount > best.clickCount) ? u : best, null);
 
-  // Filter and sort
   const filtered = urls
     .filter(u =>
       u.originalUrl.toLowerCase().includes(search.toLowerCase()) ||
@@ -78,7 +73,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-surface-100 dark:bg-dark-900">
 
-      {/* Mobile sidebar overlay */}
+      {/* ── Sidebar overlay (mobile only) ── */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -93,10 +88,13 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* Sidebar — slides in on mobile, always visible on lg+ */}
+      {/* ── Sidebar ──
+          • Mobile  : hidden off-screen, slides in when sidebarOpen=true
+          • Desktop (≥1024px) : always visible, fixed on left             */}
       <div
         className={`
-          fixed inset-y-0 left-0 z-30 w-72 transform transition-transform duration-300 ease-in-out
+          fixed inset-y-0 left-0 z-30 w-72
+          transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
         `}
@@ -104,20 +102,25 @@ export default function Dashboard() {
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </div>
 
-      {/* Main content — offset on lg+ to account for sidebar */}
+      {/* ── Main column (pushed right of sidebar on lg+) ── */}
       <div className="lg:pl-72 flex flex-col min-h-screen">
 
-        {/* Navbar — hidden below lg breakpoint (≥1024px), visible on desktop */}
-        <div className="hidden lg:block">
-          <Navbar onMenuClick={() => setSidebarOpen(prev => !prev)} />
+        {/* ── TOP NAV ──
+            • ≥1000px  → full <Navbar> (visible)
+            • <1000px  → slim mobile bar with hamburger (Navbar hidden)   */}
+
+        {/* Full Navbar — only on screens ≥ 1000px */}
+        <div className="hidden min-[1000px]:block sticky top-0 z-10">
+          <Navbar />
         </div>
 
-        {/* Mobile top bar — visible only below lg, replaces Navbar */}
-        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-white dark:bg-dark-800 border-b border-surface-200 dark:border-dark-700 sticky top-0 z-10">
+        {/* Slim mobile top-bar — only below 1000px */}
+        <div className="min-[1000px]:hidden sticky top-0 z-10 flex items-center gap-3 px-4 py-3 bg-white dark:bg-dark-800 border-b border-surface-200 dark:border-dark-700 shadow-sm">
+          {/* Hamburger */}
           <button
             onClick={() => setSidebarOpen(prev => !prev)}
-            className="p-2 rounded-lg bg-surface-100 dark:bg-dark-700 text-surface-700 dark:text-dark-300 hover:bg-surface-200 dark:hover:bg-dark-600 transition-colors"
-            aria-label="Open menu"
+            className="flex-shrink-0 p-2 rounded-lg bg-surface-100 dark:bg-dark-700 text-surface-700 dark:text-dark-300 hover:bg-surface-200 dark:hover:bg-dark-600 transition-colors"
+            aria-label="Toggle sidebar"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="12" x2="21" y2="12" />
@@ -126,15 +129,15 @@ export default function Dashboard() {
             </svg>
           </button>
 
-          {/* Brand / logo in center */}
-          <span className="text-base font-display font-bold text-surface-900 dark:text-white tracking-tight">
+          {/* App name / logo — grows to fill remaining space */}
+          <span className="flex-1 text-base font-display font-bold text-surface-900 dark:text-white tracking-tight truncate">
             Dashboard
           </span>
 
-          {/* Right slot — placeholder to keep title centered */}
-          <div className="w-9" />
+          {/* Optional: mirror any right-side icons from your Navbar here, e.g. avatar */}
         </div>
 
+        {/* ── Page content ── */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full mx-auto">
 
           {/* Header */}
@@ -143,26 +146,16 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 sm:mb-8"
           >
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-display font-bold text-surface-900 dark:text-white mb-1 truncate">
-                  {getGreeting()},{' '}
-                  <span className="text-gradient-primary">
-                    {user?.name?.split(' ')[0]}
-                  </span>{' '}
-                  👋
-                </h1>
-                <p className="text-sm sm:text-base text-surface-600 dark:text-dark-400">
-                  Welcome to your Analytics Command Center
-                </p>
-              </div>
-
-              {/* Spacer — hamburger now lives in the sticky mobile top bar */}
-              <div className="lg:hidden w-9" />
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-display font-bold text-surface-900 dark:text-white mb-1">
+              {getGreeting()},{' '}
+              <span className="text-gradient-primary">{user?.name?.split(' ')[0]}</span> 👋
+            </h1>
+            <p className="text-sm sm:text-base text-surface-600 dark:text-dark-400">
+              Welcome to your Analytics Command Center
+            </p>
           </motion.div>
 
-          {/* Stats Grid — 2 cols on xs, 4 cols on lg */}
+          {/* Stats Grid — 2 cols mobile, 4 cols desktop */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             <StatCard
               label="Total Links"
@@ -278,7 +271,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            {/* List header — stacks on mobile */}
+            {/* List header */}
             <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-lg sm:text-xl font-display font-semibold text-surface-900 dark:text-white">
                 Your Links{' '}
@@ -340,15 +333,7 @@ export default function Dashboard() {
                 ) : (
                   <>
                     <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary-500/10 to-secondary-500/10 flex items-center justify-center">
-                      <svg
-                        width="32"
-                        height="32"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        className="text-primary-500 sm:w-10 sm:h-10"
-                      >
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-primary-500">
                         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                       </svg>
