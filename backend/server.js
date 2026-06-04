@@ -15,7 +15,8 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://short-url-generator-alpha.vercel.app'
+    'https://short-url-generator-alpha.vercel.app',
+    'https://short-url-generator-m54zdsgm7-subikas-projects.vercel.app'  // ✅ ADD THIS
   ],
   credentials: true
 }));
