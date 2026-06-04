@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);  // CHANGE 1: false
   const [showBulk, setShowBulk] = useState(false);
 
   const fetchUrls = async () => {
@@ -77,7 +77,7 @@ export default function Dashboard() {
       <div className="lg:pl-72 transition-all duration-300">
         <Navbar />
         
-        <main className="p-4 sm:p-6 lg:p-8 pb-24">
+        <main className="p-4 sm:p-6 lg:p-8 pb-24">  {/* CHANGE 2: pb-24 */}
           {/* Header */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
