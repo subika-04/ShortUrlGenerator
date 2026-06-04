@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
 
   const fetchUrls = async () => {
@@ -74,10 +74,25 @@ export default function Dashboard() {
     <div className="min-h-screen bg-surface-100 dark:bg-dark-900">
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <div className="lg:pl-72 transition-all duration-300">
-        <Navbar />
+      <div className="lg:ml-72 transition-all duration-300">
+        {/* Sticky Navbar Container */}
+        <div className="sticky top-0 z-40">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between px-4 py-3 lg:hidden bg-surface-100 dark:bg-dark-900 border-b border-surface-200 dark:border-dark-700">
+            <button onClick={() => setSidebarOpen(true)} className="btn-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <span className="font-display font-bold text-surface-900 dark:text-white">Dashboard</span>
+            <div className="w-8" />
+          </div>
+          <Navbar />
+        </div>
         
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main className="p-4 sm:p-6 pb-24">
           {/* Header */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
@@ -96,7 +111,7 @@ export default function Dashboard() {
               </div>
               
               <button 
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                onClick={() => setSidebarOpen(true)}
                 className="lg:hidden btn-icon"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
