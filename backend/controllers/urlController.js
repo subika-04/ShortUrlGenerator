@@ -366,39 +366,6 @@ const updateExpiry = async (req, res) => {
     res.status(500).json({ message: 'Failed to update expiration.' });
   }
 };
-
-module.exports = {
-  shortenUrl,
-  getUserUrls,
-  deleteUrl,
-  updateUrl,
-  getAnalytics,
-  getPublicStats,
-  updateExpiry,
-  getDeviceType,
-  getBrowser,
-  getOperatingSystem,
-  isUrlExpired,
-  bulkShorten,
-};
-
-
-// Helper: get visitor location from IP
-const getVisitorLocation = (ip) => {
-  try {
-    if (!ip || ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168') || ip.startsWith('10.')) {
-      return { country: 'Unknown', city: 'N/A' };
-    }
-    const geo = geoip.lookup(ip);
-    return {
-      country: geo?.country || 'Unknown',
-      city: geo?.city || 'N/A'
-    };
-  } catch (err) {
-    return { country: 'Unknown', city: 'N/A' };
-  }
-};
-
 // POST /api/url/bulk
 const bulkShorten = async (req, res) => {
   try {
@@ -480,3 +447,35 @@ const isUrlSuspended = (url) => {
   
   return now >= suspendFrom && now <= suspendUntil;
 };
+module.exports = {
+  shortenUrl,
+  getUserUrls,
+  deleteUrl,
+  updateUrl,
+  getAnalytics,
+  getPublicStats,
+  updateExpiry,
+  getDeviceType,
+  getBrowser,
+  getOperatingSystem,
+  isUrlExpired,
+  bulkShorten,
+};
+
+
+// Helper: get visitor location from IP
+const getVisitorLocation = (ip) => {
+  try {
+    if (!ip || ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168') || ip.startsWith('10.')) {
+      return { country: 'Unknown', city: 'N/A' };
+    }
+    const geo = geoip.lookup(ip);
+    return {
+      country: geo?.country || 'Unknown',
+      city: geo?.city || 'N/A'
+    };
+  } catch (err) {
+    return { country: 'Unknown', city: 'N/A' };
+  }
+};
+
