@@ -82,28 +82,28 @@ export default function Dashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-20 bg-black/50 min-[1400px]:hidden"
+            className="fixed inset-0 z-20 bg-black/50 lg:hidden"
             onClick={handleOverlayClick}
           />
         )}
       </AnimatePresence>
 
       {/* ── Sidebar ──
-          • < 1400px : hidden off-screen, slides in when sidebarOpen=true
-          • ≥ 1400px : always visible, fixed on left                      */}
+          • < 1024px : hidden off-screen, slides in when sidebarOpen=true
+          • ≥ 1024px : always visible, fixed on left                      */}
       <div
         className={`
           fixed inset-y-0 left-0 z-30 w-72
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          min-[1400px]:translate-x-0
+          lg:translate-x-0
         `}
       >
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </div>
 
-      {/* ── Main column (pushed right of sidebar on ≥1400px) ── */}
-      <div className="min-[1400px]:pl-72 flex flex-col min-h-screen">
+      {/* ── Main column (pushed right of sidebar on ≥1024px) ── */}
+      <div className="lg:pl-72 flex flex-col min-h-screen">
 
         {/* ── TOP NAV ──
             • ≥1000px  → full <Navbar> (visible)
