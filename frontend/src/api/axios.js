@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL:'https://shorturlgenerator-4hbz.onrender.com',
-  withCredentials: true,
+  
 });
 
 api.interceptors.request.use((config) => {
