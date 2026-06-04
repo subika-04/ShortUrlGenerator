@@ -294,23 +294,28 @@ const getAnalytics = async (req, res) => {
 // GET /api/url/public/:shortCode
 const getPublicStats = async (req, res) => {
   try {
-    console.log('Public stats requested for:', req.params.shortCode);
-    
     const url = await Url.findOne({ shortCode: req.params.shortCode }).lean();
-    console.log('Found URL:', url);
     
     if (!url) {
-      return res.status(404).json({ message: 'URL not found.', code: req.params.shortCode });
+      return res.status(404).json({ message: 'URL not found.' });
     }
+    
+    // ✅ Add dailyClicks aggregation
+    const dailyClicks = await Visit.aggregate([
+      { $match: { urlId: url._id } },
+      { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } }, count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+      { $project: { date: '$_id', count: 1, _id: 0 } },
+    ]);
     
     res.json({
       shortCode: url.shortCode,
       originalUrl: url.originalUrl,
       clickCount: url.clickCount || 0,
-      shortUrl: `${getBaseUrl()}/${url.shortCode}`,
+      createdAt: url.createdAt,
+      dailyClicks,  // ✅ Include this!
     });
   } catch (err) {
-    console.error('Public stats error:', err);
     res.status(500).json({ message: 'Failed to fetch public stats.' });
   }
 };
