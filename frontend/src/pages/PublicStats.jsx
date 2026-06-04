@@ -28,7 +28,7 @@ export default function PublicStats() {
   useEffect(() => {
     const load = async () => {
       try {
-        const { data: res } = await urlApi.getPublic(shortCode);
+        const { data: res } = await urlApi.getPublicStats(shortCode);
         setData(res);
       } catch (err) {
         setError(err.response?.data?.message || 'Link not found');
