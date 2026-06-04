@@ -33,7 +33,7 @@ try {
 let urlRoutes;
 try {
   urlRoutes = require('./routes/url');
-  app.use('/api/url', urlRoutes);
+  app.use('/url', urlRoutes);
   console.log('URL routes OK');
 } catch (err) {
   console.log('URL routes ERROR:', err.message);
