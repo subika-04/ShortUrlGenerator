@@ -41,7 +41,6 @@ const urlSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    // Expiration system
     expiresAt: {
       type: Date,
       default: null,
@@ -51,32 +50,30 @@ const urlSchema = new mongoose.Schema(
       default: null,
     },
     suspendFrom: {
-  type: Date,
-  default: null,
-},
-suspendFromTime: {
-  type: String,
-  default: null,
-},
-suspendUntil: {
-  type: Date,
-  default: null,
-},
-suspendUntilTime: {
-  type: String,
-  default: null,
-},
+      type: Date,
+      default: null,
+    },
+    suspendFromTime: {
+      type: String,
+      default: null,
+    },
+    suspendUntil: {
+      type: Date,
+      default: null,
+    },
+    suspendUntilTime: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
 
-// Virtual for checking if URL is expired
 urlSchema.virtual('isExpired').get(function() {
   if (!this.expiresAt) return false;
   return new Date() > this.expiresAt;
 });
 
-// Index for efficient queries
 urlSchema.index({ userId: 1, createdAt: -1 });
 urlSchema.index({ expiresAt: 1 }, { sparse: true });
 

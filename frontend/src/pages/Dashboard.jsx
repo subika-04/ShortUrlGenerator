@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import AdminSidebar from '../components/AdminSidebar';
 import StatCard from '../components/StatCard';
 import ShortenForm from '../components/ShortenForm';
+import BulkCSVForm from '../components/BulkCSVForm';
 import UrlCard from '../components/UrlCard';
 import SearchInput from '../components/SearchInput';
 import { urlApi } from '../api/urlApi';
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showBulk, setShowBulk] = useState(false);
 
   const fetchUrls = async () => {
     try {
@@ -33,7 +35,10 @@ export default function Dashboard() {
     fetchUrls(); 
   }, []);
 
-  const handleSuccess = (newUrl) => setUrls(prev => [newUrl, ...prev]);
+  const handleSuccess = (newUrl) => {
+    setUrls(prev => [newUrl, ...prev]);
+    setShowBulk(false);
+  };
   const handleDelete = (id) => setUrls(prev => prev.filter(u => u._id !== id));
   const handleUpdate = (updated) => setUrls(prev => prev.map(u => u._id === updated._id ? { ...u, ...updated } : u));
 
@@ -157,14 +162,34 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Shorten Form */}
+          {/* Toggle Buttons */}
+          <div className="flex gap-2 mb-4">
+            <button 
+              onClick={() => setShowBulk(false)} 
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${!showBulk ? 'bg-primary-500 text-white' : 'bg-surface-200 dark:bg-dark-700 text-surface-600 dark:text-dark-400'}`}
+            >
+              Single URL
+            </button>
+            <button 
+              onClick={() => setShowBulk(true)} 
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showBulk ? 'bg-primary-500 text-white' : 'bg-surface-200 dark:bg-dark-700 text-surface-600 dark:text-dark-400'}`}
+            >
+              Bulk Upload
+            </button>
+          </div>
+
+          {/* Shorten Form or Bulk Form */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="mb-8"
           >
-            <ShortenForm onSuccess={handleSuccess} />
+            {!showBulk ? (
+              <ShortenForm onSuccess={handleSuccess} />
+            ) : (
+              <BulkCSVForm onSuccess={handleSuccess} />
+            )}
           </motion.div>
 
           {/* URL List */}
@@ -217,17 +242,12 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : filtered.length === 0 ? (
-              /* Empty State */
               <div className="card p-12 text-center">
                 {search ? (
                   <>
                     <div className="text-5xl mb-4">🔍</div>
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-2">
-                      No results found
-                    </h3>
-                    <p className="text-surface-500 dark:text-dark-400">
-                      Try a different search term
-                    </p>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-2">No results found</h3>
+                    <p className="text-surface-500 dark:text-dark-400">Try a different search term</p>
                   </>
                 ) : (
                   <>
@@ -237,17 +257,12 @@ export default function Dashboard() {
                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-2">
-                      No links yet
-                    </h3>
-                    <p className="text-surface-500 dark:text-dark-400">
-                      Paste a URL above to create your first short link
-                    </p>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-2">No links yet</h3>
+                    <p className="text-surface-500 dark:text-dark-400">Paste a URL above to create your first short link</p>
                   </>
                 )}
               </div>
             ) : (
-              /* URL Cards */
               <div className="space-y-3">
                 {filtered.map((url, index) => (
                   <motion.div
@@ -256,11 +271,7 @@ export default function Dashboard() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <UrlCard 
-                      url={url} 
-                      onDelete={handleDelete} 
-                      onUpdate={handleUpdate} 
-                    />
+                    <UrlCard url={url} onDelete={handleDelete} onUpdate={handleUpdate} />
                   </motion.div>
                 ))}
               </div>

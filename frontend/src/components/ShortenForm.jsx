@@ -9,16 +9,12 @@ function ShortenForm({ onSuccess }) {
   const [expiryTime, setExpiryTime] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // ✅ Add suspend states
   const [suspendFrom, setSuspendFrom] = useState('');
-const [suspendFromTime, setSuspendFromTime] = useState('');
-const [suspendUntil, setSuspendUntil] = useState('');
-const [suspendUntilTime, setSuspendUntilTime] = useState('');
-
-// In the handleSubmit payload:
-if (suspendFrom) payload.suspendFrom = suspendFrom;
-if (suspendFromTime) payload.suspendFromTime = suspendFromTime;
-if (suspendUntil) payload.suspendUntil = suspendUntil;
-if (suspendUntilTime) payload.suspendUntilTime = suspendUntilTime;
+  const [suspendFromTime, setSuspendFromTime] = useState('');
+  const [suspendUntil, setSuspendUntil] = useState('');
+  const [suspendUntilTime, setSuspendUntilTime] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,6 +36,16 @@ if (suspendUntilTime) payload.suspendUntilTime = suspendUntilTime;
         if (expiryTime) payload.expiresAtTime = expiryTime;
       }
       
+      // ✅ Add suspend fields to payload
+      if (suspendFrom) {
+        payload.suspendFrom = suspendFrom;
+        if (suspendFromTime) payload.suspendFromTime = suspendFromTime;
+      }
+      if (suspendUntil) {
+        payload.suspendUntil = suspendUntil;
+        if (suspendUntilTime) payload.suspendUntilTime = suspendUntilTime;
+      }
+      
       const { data } = await urlApi.create(payload);
       onSuccess?.(data.url);
       
@@ -47,6 +53,10 @@ if (suspendUntilTime) payload.suspendUntilTime = suspendUntilTime;
       setAlias('');
       setExpiryDate('');
       setExpiryTime('');
+      setSuspendFrom('');
+      setSuspendFromTime('');
+      setSuspendUntil('');
+      setSuspendUntilTime('');
       setLoading(false);
     } catch (err) {
       console.error('Create URL error:', err);
@@ -115,6 +125,53 @@ if (suspendUntilTime) payload.suspendUntilTime = suspendUntilTime;
             />
           </div>
         )}
+
+        {/* ✅ Suspend From Section */}
+        <div className="border-t border-surface-200 dark:border-dark-700 pt-4 mt-4">
+          <p className="text-sm font-medium text-surface-700 dark:text-dark-300 mb-3">Suspend Link (optional)</p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="label">Suspend From</label>
+              <input
+                type="date"
+                value={suspendFrom}
+                onChange={(e) => setSuspendFrom(e.target.value)}
+                className="input"
+              />
+            </div>
+            <div>
+              <label className="label">Suspend Until</label>
+              <input
+                type="date"
+                value={suspendUntil}
+                onChange={(e) => setSuspendUntil(e.target.value)}
+                className="input"
+              />
+            </div>
+          </div>
+          {suspendFrom && (
+            <div className="mt-2">
+              <label className="label">Suspend From Time</label>
+              <input
+                type="time"
+                value={suspendFromTime}
+                onChange={(e) => setSuspendFromTime(e.target.value)}
+                className="input"
+              />
+            </div>
+          )}
+          {suspendUntil && (
+            <div className="mt-2">
+              <label className="label">Suspend Until Time</label>
+              <input
+                type="time"
+                value={suspendUntilTime}
+                onChange={(e) => setSuspendUntilTime(e.target.value)}
+                className="input"
+              />
+            </div>
+          )}
+        </div>
 
         {error && (
           <motion.div 
