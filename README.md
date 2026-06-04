@@ -267,3 +267,7 @@ MIT
 - React  
 - Node.js  
 - This project is part of a hackathon run by https://katomaran.com
+
+
+Deployment Link:https://short-url-generator-alpha.vercel.app/
+Video Link:https://www.loom.com/share/c43a642f815f4378b6f80a889bb73d8
