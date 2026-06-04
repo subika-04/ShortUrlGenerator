@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '10m' });
 };
 
 // POST /api/auth/signup
@@ -19,13 +19,13 @@ const signup = async (req, res) => {
       return res.status(409).json({ message: 'Email already in use.' });
     }
 
-    const user = await User.create({ name, email, password });
-    const token = generateToken(user._id);
+    // Create user but DON'T generate token
+    await User.create({ name, email, password });
 
+    // ✅ Return success WITHOUT token - user must login
     res.status(201).json({
-      message: 'Account created successfully.',
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
+      message: 'Account created successfully. Please login to continue.',
+      requiresLogin: true,  // Tell frontend to redirect to login
     });
   } catch (err) {
     console.error("SIGNUP ERROR:", err);
@@ -60,6 +60,7 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
+    // ✅ Generate token ONLY on login
     const token = generateToken(user._id);
 
     res.json({

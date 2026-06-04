@@ -9,6 +9,7 @@ const {
   getAnalytics,
   getPublicStats,
   updateExpiry,
+  bulkShorten
 } = require('../controllers/urlController');
 
 // Debug - log all requests
@@ -27,6 +28,7 @@ router.delete('/:id', protect, deleteUrl);
 router.put('/:id', protect, updateUrl);
 router.get('/analytics/:id', protect, getAnalytics);
 router.patch('/expiry/:id', protect, updateExpiry);
+router.post('/bulk', protect, bulkShorten);
 
 // Public route
 router.get('/public/:shortCode', getPublicStats);

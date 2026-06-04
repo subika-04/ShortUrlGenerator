@@ -17,26 +17,22 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.name || !form.email || !form.password) {
-      setError('All fields are required.');
-      return;
-    }
-    if (form.password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
-    setLoading(true);
-    try {
-      await signup(form.name, form.email, form.password);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  e.preventDefault();
+  
+  setLoading(true);
+  setError('');
+  
+  try {
+    await signup(name, email, password);
+    
+    // ✅ Redirect to login after signup
+    navigate('/login');
+  } catch (err) {
+    setError(err.response?.data?.message || 'Signup failed.');
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       {/* Background Effects */}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';  // ✅ Added useNavigate
 import { motion, AnimatePresence } from 'framer-motion';
 import CopyButton from './CopyButton';
 import Badge from './Badge';
@@ -13,6 +13,7 @@ const formatDate = (date) => {
 };
 
 export default function UrlCard({ url, onDelete, onUpdate }) {
+  const navigate = useNavigate();  // ✅ Added useNavigate
   const [showMenu, setShowMenu] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showQR, setShowQR] = useState(false);

@@ -57,12 +57,25 @@ const isUrlExpired = (url) => {
 const shortenUrl = async (req, res) => {
   try {
     const { originalUrl, customAlias, expiresAt, expiresAtTime } = req.body;
-    if (!originalUrl) {
-      return res.status(400).json({ message: 'Original URL is required.' });
-    }
-    if (!validUrl.isUri(originalUrl)) {
-      return res.status(400).json({ message: 'Please provide a valid URL (include http:// or https://).' });
-    }
+    // In shortenUrl function, improve validation:
+if (!originalUrl) {
+  return res.status(400).json({ message: 'Original URL is required.' });
+}
+
+// Check for valid URL format
+if (!validUrl.isUri(originalUrl)) {
+  return res.status(400).json({ message: 'Please provide a valid URL (include http:// or https://).' });
+}
+
+// Try to fetch the URL to validate it actually exists
+try {
+  const response = await fetch(originalUrl, { method: 'HEAD', timeout: 5000 });
+  if (!response.ok) {
+    console.log('URL responded but may not be valid:', response.status);
+  }
+} catch (err) {
+  console.log('URL validation warning:', err.message);
+}
 
     let shortCode = customAlias ? customAlias.trim() : nanoid(10);
 
@@ -382,4 +395,71 @@ const getVisitorLocation = (ip) => {
   } catch (err) {
     return { country: 'Unknown', city: 'N/A' };
   }
+};
+
+// POST /api/url/bulk
+const bulkShorten = async (req, res) => {
+  try {
+    const { urls, expiresAt, expiresAtTime } = req.body;
+    
+    if (!urls || !Array.isArray(urls)) {
+      return res.status(400).json({ message: 'Please provide an array of URLs.' });
+    }
+    
+    if (urls.length > 100) {
+      return res.status(400).json({ message: 'Maximum 100 URLs at a time.' });
+    }
+    
+    const results = [];
+    const errors = [];
+    
+    for (const originalUrl of urls) {
+      if (!validUrl.isUri(originalUrl)) {
+        errors.push({ url: originalUrl, error: 'Invalid URL' });
+        continue;
+      }
+      
+      let shortCode = nanoid(10);
+      let attempts = 0;
+      while (await Url.findOne({ shortCode }) && attempts < 5) {
+        shortCode = nanoid(10);
+        attempts++;
+      }
+      
+      let expiration = null;
+      if (expiresAt) {
+        expiration = new Date(expiresAt);
+        if (!isNaN(expiration.getTime()) && expiration > new Date()) {
+          if (expiresAtTime) {
+            const [hours, minutes] = expiresAtTime.split(':');
+            expiration.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+          }
+        }
+      }
+      
+      const url = await Url.create({
+        userId: req.user._id,
+        originalUrl,
+        shortCode,
+        expiresAt: expiration,
+        expiresAtTime: expiresAtTime || null,
+      });
+      
+      results.push({
+        originalUrl: url.originalUrl,
+        shortCode: url.shortCode,
+        shortUrl: `${getBaseUrl()}/${url.shortCode}`,
+      });
+    }
+    
+    res.json({ results, errors });
+  } catch (err) {
+    res.status(500).json({ message: 'Bulk shortening failed.' });
+  }
+};
+
+// Export it
+module.exports = {
+  // ... existing exports
+  bulkShorten,
 };
