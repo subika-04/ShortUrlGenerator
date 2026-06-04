@@ -24,16 +24,16 @@ app.get('/api/health', (req, res) => {
 // Try loading routes and catch any errors
 try {
   app.use('/api/auth', authRoutes);
-  console.log('✅ Auth routes loaded');
+  alert('✅ Auth routes loaded');
 } catch (e) {
-  console.error('❌ Auth routes error:', e.message);
+  alert('❌ Auth routes error:', e.message);
 }
 
 try {
   app.use('/api/url', urlRoutes);  
-  console.log('✅ URL routes loaded');
+  alert('✅ URL routes loaded');
 } catch (e) {
-  console.error('❌ URL routes error:', e.message);
+  alert('❌ URL routes error:', e.message);
 }
 
 
