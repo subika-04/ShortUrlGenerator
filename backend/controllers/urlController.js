@@ -329,7 +329,7 @@ const getAnalytics = async (req, res) => {
     res.json({
       url: { 
         ...url, 
-        shortUrl: `${process.env.BASE_URL}/${url.shortCode}`,
+        shortUrl: `${process.env.BASE_URL}${url.shortCode}`,
         isExpired: expired,
       },
       analytics: {
