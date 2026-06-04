@@ -24,6 +24,7 @@ export default function PublicStats() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -38,6 +39,25 @@ export default function PublicStats() {
     };
     load();
   }, [shortCode]);
+
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback
+      const input = document.createElement('input');
+      input.value = shareUrl;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   if (loading) {
     return (
@@ -61,6 +81,7 @@ export default function PublicStats() {
   }
 
   const chartData = data.dailyClicks?.map(d => ({ date: formatChartDate(d.date), clicks: d.count })) || [];
+  const statsUrl = window.location.href;
 
   return (
     <div className="min-h-screen bg-surface-100 dark:bg-dark-900">
@@ -109,7 +130,7 @@ export default function PublicStats() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="card p-6"
+          className="card p-6 mb-6"
         >
           <h2 className="text-lg font-display font-semibold text-surface-900 dark:text-white mb-4">
             Click Trend (Last 30 Days)
@@ -133,6 +154,32 @@ export default function PublicStats() {
               </AreaChart>
             </ResponsiveContainer>
           )}
+        </motion.div>
+
+        {/* ✅ Share Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="card p-6"
+        >
+          <h2 className="text-lg font-display font-semibold text-surface-900 dark:text-white mb-4">
+            Share Stats
+          </h2>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={statsUrl}
+              readOnly
+              className="input flex-1 bg-surface-50 dark:bg-dark-800"
+            />
+            <button
+              onClick={handleShare}
+              className="btn-primary px-4 whitespace-nowrap"
+            >
+              {copied ? '✓ Copied!' : 'Copy Link'}
+            </button>
+          </div>
         </motion.div>
 
         <p className="text-center text-xs text-surface-500 dark:text-dark-500 mt-8">
