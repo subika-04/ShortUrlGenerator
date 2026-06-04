@@ -460,6 +460,7 @@ module.exports = {
   getOperatingSystem,
   isUrlExpired,
   bulkShorten,
+  isUrlSuspended
 };
 
 
