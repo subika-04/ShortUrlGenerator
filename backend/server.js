@@ -3,14 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-const authRoutes = require('./routes/auth');
-const urlRoutes = require('./routes/url');
-const redirectRoute = require('./routes/redirect');
-const geoip = require('geoip-lite');
-const useragent = require('useragent');
 const app = express();
-
-
 
 app.use(cors({
   origin: '*'
@@ -19,58 +12,59 @@ app.use(express.json());
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'URL Shortener API is running' });
-});
-// Try loading routes and catch any errors
-try {
-  app.use('/api/auth', authRoutes);
-  console.log('✅ Auth routes loaded');
-} catch (e) {
-  console.error('❌ Auth routes error:', e.message);
-}
-
-try {
-  app.use('/api/url', urlRoutes);  
-  console.log('✅ URL routes loaded');
-} catch (e) {
-  console.error('❌ URL routes error:', e.message);
-}
-
-
-// Redirect route (must be last)
-app.use('/', redirectRoute);
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Internal server error', error: err.message });
+  res.json({ status: 'OK' });
 });
 
-// Add this right after health check:
 app.get('/api/debug', (req, res) => {
-  const routes = [];
-  app._router.stack.forEach((middleware) => {
-    if (middleware.route) {
-      routes.push({
-        path: middleware.route.path,
-        methods: Object.keys(middleware.route.methods)
-      });
-    }
-  });
-  res.json({ routes });
+  res.json({ message: 'works' });
 });
-// Connect to MongoDB and start server
+
+// Load auth routes with detailed error
+let authRoutes;
+try {
+  authRoutes = require('./routes/auth');
+  app.use('/api/auth', authRoutes);
+  console.log('Auth routes OK');
+} catch (err) {
+  console.log('Auth routes ERROR:', err.message);
+}
+
+// Load url routes with detailed error
+let urlRoutes;
+try {
+  urlRoutes = require('./routes/url');
+  app.use('/api/url', urlRoutes);
+  console.log('URL routes OK');
+} catch (err) {
+  console.log('URL routes ERROR:', err.message);
+}
+
+// Load redirect routes
+let redirectRoute;
+try {
+  redirectRoute = require('./routes/redirect');
+  app.use('/', redirectRoute);
+  console.log('Redirect routes OK');
+} catch (err) {
+  console.log('Redirect routes ERROR:', err.message);
+}
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('ERROR:', err.message);
+  res.status(500).json({ message: 'Error', error: err.message });
+});
+
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log('✅ MongoDB connected');
+    console.log('MongoDB connected');
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`Server on ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
+    console.error('MongoDB error:', err.message);
     process.exit(1);
   });
