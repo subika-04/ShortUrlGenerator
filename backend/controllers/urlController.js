@@ -379,7 +379,9 @@ module.exports = {
   getBrowser,
   getOperatingSystem,
   isUrlExpired,
+  bulkShorten,
 };
+
 
 // Helper: get visitor location from IP
 const getVisitorLocation = (ip) => {
@@ -458,8 +460,3 @@ const bulkShorten = async (req, res) => {
   }
 };
 
-// Export it
-module.exports = {
-  // ... existing exports
-  bulkShorten,
-};
