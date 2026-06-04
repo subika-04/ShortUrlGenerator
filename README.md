@@ -1,4 +1,4 @@
-### ✂️ URL Shortener with Analytics
+## ✂️ URL Shortener with Analytics
 
 A full-stack URL Shortener application built with the MERN stack. Track clicks, devices, locations, and trends with a beautiful dark-themed dashboard.
 
@@ -257,16 +257,13 @@ CLIENT_URL=http://localhost:5173
 
 ---
 
-## 📝 License
-MIT  
-
----
-
 ## 🙏 Acknowledgments
 - MongoDB  
 - React  
 - Node.js  
 - This project is part of a hackathon run by https://katomaran.com
+
+---
 
 
 ## Live Demo
@@ -274,6 +271,8 @@ MIT
 - **Deployment:** [Short URL Generator](https://short-url-generator-alpha.vercel.app/)
 - **Demo Video:** [Watch Demo](https://www.loom.com/share/a729fda8fc734dbf999cb7dfcdfa820f)
 
+
+---
 
 ## Images
 
