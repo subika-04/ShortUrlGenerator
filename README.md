@@ -1,4 +1,4 @@
-✂️ URL Shortener with Analytics
+###✂️ URL Shortener with Analytics
 
 A full-stack URL Shortener application built with the MERN stack. Track clicks, devices, locations, and trends with a beautiful dark-themed dashboard.
 
