@@ -1,4 +1,4 @@
-<img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/ccd0993d-228f-4a10-a169-be666ea5fd20" /># ✂️ URL Shortener with Analytics
+✂️ URL Shortener with Analytics
 
 A full-stack URL Shortener application built with the MERN stack. Track clicks, devices, locations, and trends with a beautiful dark-themed dashboard.
 
@@ -276,5 +276,13 @@ MIT
 
 
 ## Images
+
+<img width="1919" height="908" alt="image" src="https://github.com/user-attachments/assets/ccd0993d-228f-4a10-a169-be666ea5fd20" />#
+<img width="1917" height="903" alt="image" src="https://github.com/user-attachments/assets/8a05fded-d6ec-459e-96fa-41e2b35da53e" />
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/00ba1d3c-c344-4f39-a05a-d1baeaa5b3a2" />
+<img width="1919" height="912" alt="image" src="https://github.com/user-attachments/assets/722066ab-685c-41f3-8028-9cccf0c3a047" />
+<img width="1919" height="905" alt="image" src="https://github.com/user-attachments/assets/01173273-1f69-49de-8585-228e91fa1757" />
+<img width="1919" height="896" alt="image" src="https://github.com/user-attachments/assets/bc74c8b5-36a6-45de-b345-cb14c6aa3a46" />
+<img width="1919" height="913" alt="image" src="https://github.com/user-attachments/assets/48399f08-74c5-490a-bd1d-79106a53cd3d" />
 
 
