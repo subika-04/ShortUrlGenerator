@@ -25,8 +25,8 @@ export const AuthProvider = ({ children }) => {
       }
       api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
       try {
-        const { data } = await api.get('/api/auth/me');
-        setUser(data.user);
+        const user= localStorage.getItem('snip_user');
+        setUser(user);
         setToken(storedToken);
       } catch {
         logout();
@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const { data } = await api.post('/api/auth/login', { email, password });
     localStorage.setItem('snip_token', data.token);
+    localStorage.setItem('snip_user',data.user);
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setToken(data.token);
     setUser(data.user);
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }) => {
   const signup = async (name, email, password) => {
     const { data } = await api.post('/api/auth/signup', { name, email, password });
     localStorage.setItem('snip_token', data.token);
+    localStorage.setItem('snip_user',data.user);
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setToken(data.token);
     setUser(data.user);
