@@ -269,7 +269,7 @@ CLIENT_URL=http://localhost:5173
 ## Live Demo
 
 - **Deployment:** [Short URL Generator](https://short-url-generator-alpha.vercel.app/)
-**Sample Login Credentials**
+## Sample Login Credentials
 - **Email:** subikass23it@srishakthi.ac.in
 - **Password:** 123456
 - **Demo Video:** [Watch Demo](https://www.loom.com/share/a729fda8fc734dbf999cb7dfcdfa820f)
