@@ -81,6 +81,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (name, email, password) => {
+    try{
+      alert("Signup function call");
     const { data } = await api.post('/api/auth/signup', {
       name,
       email,
@@ -89,7 +91,11 @@ export const AuthProvider = ({ children }) => {
 
     // No token storage here.
     // After successful signup, navigate to Login page.
-
+  }
+  catch(error)
+  {
+    alert("Error Occured in signup");
+  }
     return data;
   };
 
