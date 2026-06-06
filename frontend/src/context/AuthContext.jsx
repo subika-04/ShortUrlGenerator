@@ -16,27 +16,27 @@ export const AuthProvider = ({ children }) => {
     delete api.defaults.headers.common['Authorization'];
   }, []);
 
-  useEffect(() => {
-    const initAuth = async () => {
-      const storedToken = localStorage.getItem('snip_token');
-      if (!storedToken) {
-        console.log("Error due to stored token");
-        setLoading(false);
-        return;
-      }
-      api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-      try {
-        const user= localStorage.getItem('snip_user');
-        setUser(user);
-        setToken(storedToken);
-      } catch {
-        logout();
-      } finally {
-        setLoading(false);
-      }
-    };
-    initAuth();
-  }, [logout]);
+  // useEffect(() => {
+  //   const initAuth = async () => {
+  //     const storedToken = localStorage.getItem('snip_token');
+  //     if (!storedToken) {
+  //       console.log("Error due to stored token");
+  //       setLoading(false);
+  //       return;
+  //     }
+  //     api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+  //     try {
+  //       const user= localStorage.getItem('snip_user');
+  //       setUser(user);
+  //       setToken(storedToken);
+  //     } catch {
+  //       logout();
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   initAuth();
+  // }, [logout]);
 
   const login = async (email, password) => {
     const { data } = await api.post('/api/auth/login', { email, password });
