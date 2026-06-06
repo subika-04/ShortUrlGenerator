@@ -4,6 +4,7 @@ const Url = require('../models/Url');
 const Visit = require('../models/Visit');
 const geoip = require('geoip-lite');
 const { getDeviceType, getBrowser, getOperatingSystem, isUrlExpired } = require('../controllers/urlController');
+const { getExpiryPage } = require('./ExpiryPage');  // ✅ Import
 
 // ✅ Helper: Check if URL is suspended for a period
 const isUrlSuspended = (url) => {
@@ -59,14 +60,16 @@ router.get('/:shortCode', async (req, res) => {
       return res.status(404).json({ message: 'Short URL not found.' });
     }
 
-    // ✅ Check if expired
+    // ✅ Check if expired - return HTML page
     if (isUrlExpired(url)) {
-      return res.status(410).json({ message: 'This link has expired.', isExpired: true });
+      const html = getExpiryPage(shortCode);
+      return res.status(410).send(html);
     }
 
-    // ✅ Check if suspended
+    // ✅ Check if suspended - return HTML page
     if (isUrlSuspended(url)) {
-      return res.status(403).json({ message: 'This link is currently suspended.', isSuspended: true });
+      const html = getExpiryPage(shortCode);  // Or create separate suspended page
+      return res.status(403).send(html);
     }
 
     const forwardedIP = req.headers['x-forwarded-for'];
@@ -78,9 +81,7 @@ router.get('/:shortCode', async (req, res) => {
     const deviceType = getDeviceType(userAgent);
     const browser = getBrowser(userAgent);
     const operatingSystem = getOperatingSystem(userAgent);
-    
-    // ✅ CHANGE THIS LINE - IP only
-    const fingerprint = ip;  // Just IP, not IP + userAgent
+    const fingerprint = ip;  // Just IP
 
     const existingVisit = await Visit.findOne({ urlId: url._id, fingerprint: fingerprint });
     const isUnique = !existingVisit;
