@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       const storedToken = localStorage.getItem('snip_token');
       if (!storedToken) {
+        console.log("Error due to stored token");
         setLoading(false);
         return;
       }
@@ -48,7 +49,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (name, email, password) => {
+    console.log("Function called Signup");
     const { data } = await api.post('/api/auth/signup', { name, email, password });
+    console.log(data);
     localStorage.setItem('snip_user',data.user);
     setUser(data.user);
     return data;
