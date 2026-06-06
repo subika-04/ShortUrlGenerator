@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from './AnimatedLogo';
 
 const navItems = [
@@ -47,27 +47,58 @@ const navItems = [
   },
 ];
 
+const SIDEBAR_WIDTH = 288; // 18rem / w-72
+
 export default function AdminSidebar({ isOpen = true, onClose }) {
   const location = useLocation();
 
   return (
     <>
-      {!isOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={onClose} />
-      )}
+      {/* ── Backdrop: only on mobile, only when open ── */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            onClick={onClose}
+          />
+        )}
+      </AnimatePresence>
 
+      {/* ── Sidebar panel ── */}
       <motion.aside
         initial={false}
-        animate={{ x: isOpen ? 0 : -280 }}
+        animate={{ x: isOpen ? 0 : -SIDEBAR_WIDTH }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        style={{ width: SIDEBAR_WIDTH }}
         className="fixed left-0 top-0 h-full bg-surface-50 dark:bg-dark-900 border-r border-surface-300 dark:border-dark-700 z-40 flex flex-col"
       >
-        <div className="p-4 border-b border-surface-300 dark:border-dark-700">
-          <AnimatedLogo size="default" showText={isOpen} />
+        {/* Logo */}
+        <div className="p-4 border-b border-surface-300 dark:border-dark-700 flex items-center justify-between">
+          <AnimatedLogo size="default" showText={true} />
+
+          {/* Close button — mobile only */}
+          <button
+            onClick={onClose}
+            className="lg:hidden btn-icon ml-2 flex-shrink-0"
+            aria-label="Close sidebar"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
+        {/* Nav links */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path || 
+            const isActive =
+              location.pathname === item.path ||
               (item.path === '/dashboard' && location.pathname === '/');
 
             return (
@@ -84,33 +115,32 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
                 <span className={isActive ? 'text-primary-500' : ''}>
                   {item.icon}
                 </span>
-                {isOpen && <span>{item.label}</span>}
+                <span>{item.label}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        {isOpen && (
-          <div className="p-4 border-t border-surface-300 dark:border-dark-700">
-            <div className="card-glass p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-semibold text-surface-900 dark:text-white text-sm">
-                    Short URL Generator
-                  </p>
-                  <p className="text-xs text-surface-500 dark:text-dark-400">
-                    Analytics Platform
-                  </p>
-                </div>
+        {/* Footer card */}
+        <div className="p-4 border-t border-surface-300 dark:border-dark-700">
+          <div className="card-glass p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-surface-900 dark:text-white text-sm truncate">
+                  Short URL Generator
+                </p>
+                <p className="text-xs text-surface-500 dark:text-dark-400">
+                  Analytics Platform
+                </p>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </motion.aside>
     </>
   );
