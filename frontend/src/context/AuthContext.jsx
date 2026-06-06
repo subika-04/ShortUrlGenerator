@@ -89,6 +89,7 @@ export const AuthProvider = ({ children }) => {
       password,
     });
 
+    return data;
     // No token storage here.
     // After successful signup, navigate to Login page.
   }
@@ -96,7 +97,6 @@ export const AuthProvider = ({ children }) => {
   {
     alert("Error Occured in signup");
   }
-    return data;
   };
 
   return (
