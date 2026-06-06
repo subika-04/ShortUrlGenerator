@@ -12,6 +12,7 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import PublicStats from './pages/PublicStats';
 import NotFound from './pages/NotFound';
+import ExpiryPage from './components/ExpiryPage';
 
 export default function App() {
   return (
