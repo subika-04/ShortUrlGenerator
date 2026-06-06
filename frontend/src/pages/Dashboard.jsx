@@ -43,11 +43,15 @@ export default function Dashboard() {
   const handleUpdate = (updated) => setUrls(prev => prev.map(u => u._id === updated._id ? { ...u, ...updated } : u));
 
   // Calculate stats
-  const totalClicks = urls.reduce((s, u) => s + u.clickCount, 0);
-  const activeUrls = urls.filter(u => u.isActive).length;
-  const totalUrls = urls.length;
-  const topUrl = urls.reduce((best, u) => (!best || u.clickCount > best.clickCount) ? u : best, null);
-
+  // Calculate stats
+const totalClicks = urls.reduce((s, u) => s + u.clickCount, 0);
+const totalUrls = urls.length;
+const activeUrls = urls.filter(u => {
+  if (!u.expiresAt) return true;
+  return new Date(u.expiresAt) > new Date();
+}).length;
+const expiredUrls = totalUrls - activeUrls;
+const topUrl = urls.reduce((best, u) => (!best || u.clickCount > best.clickCount) ? u : best, null);
   // Filter and sort
   const filtered = urls
     .filter(u => 
@@ -136,9 +140,9 @@ export default function Dashboard() {
               delay={1}
             />
             <StatCard
-              label="Active URLs"
-              value={activeUrls}
-              subtext={`${totalUrls - activeUrls} expired`}
+  label="Active URLs"
+  value={activeUrls}
+  subtext={`${expiredUrls} expired`}
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />

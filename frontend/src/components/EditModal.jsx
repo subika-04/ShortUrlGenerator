@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { urlApi } from '../api/urlApi';
 
 export default function EditModal({ isOpen, onClose, url, onSave }) {
   const [originalUrl, setOriginalUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Suspend fields
+  const [suspendFrom, setSuspendFrom] = useState('');
+  const [suspendUntil, setSuspendUntil] = useState('');
 
   useEffect(() => {
     if (url) {
       setOriginalUrl(url.originalUrl || '');
+      setSuspendFrom(url.suspendFrom ? new Date(url.suspendFrom).toISOString().split('T')[0] : '');
+      setSuspendUntil(url.suspendUntil ? new Date(url.suspendUntil).toISOString().split('T')[0] : '');
     }
   }, [url]);
 
@@ -22,7 +28,17 @@ export default function EditModal({ isOpen, onClose, url, onSave }) {
     setLoading(true);
     setError('');
     try {
-      const { data } = await urlApi.update(url._id, { originalUrl });
+      const payload = { originalUrl };
+      
+      // Add suspend fields
+      if (suspendFrom) payload.suspendFrom = suspendFrom;
+      if (suspendUntil) payload.suspendUntil = suspendUntil;
+      if (!suspendFrom && !suspendUntil) {
+        payload.suspendFrom = null;
+        payload.suspendUntil = null;
+      }
+      
+      const { data } = await urlApi.update(url._id, payload);
       onSave?.(data.url);
       onClose();
     } catch (err) {
@@ -38,14 +54,12 @@ export default function EditModal({ isOpen, onClose, url, onSave }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       className="modal-overlay"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
         className="modal-content"
         onClick={(e) => e.stopPropagation()}
       >
@@ -78,6 +92,32 @@ export default function EditModal({ isOpen, onClose, url, onSave }) {
               placeholder="https://example.com"
               className="input"
             />
+          </div>
+
+          {/* ✅ Suspend Section */}
+          <div className="border-t border-surface-200 dark:border-dark-700 pt-4 mt-4">
+            <p className="text-sm font-medium text-surface-700 dark:text-dark-300 mb-3">Suspend Link (optional)</p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="label">Suspend From</label>
+                <input
+                  type="date"
+                  value={suspendFrom}
+                  onChange={(e) => setSuspendFrom(e.target.value)}
+                  className="input"
+                />
+              </div>
+              <div>
+                <label className="label">Suspend Until</label>
+                <input
+                  type="date"
+                  value={suspendUntil}
+                  onChange={(e) => setSuspendUntil(e.target.value)}
+                  className="input"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-surface-500 mt-2">Leave empty to unsuspend</p>
           </div>
 
           {error && (
