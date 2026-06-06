@@ -3,7 +3,10 @@ const router = express.Router();
 const { signup, login, getMe } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
-router.post('/signup', signup);
+router.post("/signup", (req, res, next) => {
+  console.log("Signup route hit");
+  next();
+}, signup);
 router.post('/login', login);
 router.get('/me', protect, getMe);
 
