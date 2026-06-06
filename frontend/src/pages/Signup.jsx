@@ -18,17 +18,22 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
   e.preventDefault();
-  
+
   setLoading(true);
   setError('');
-  
+
   try {
-    await signup(name, email, password);
-    
-    // ✅ Redirect to login after signup
+    await signup(
+      form.name,
+      form.email,
+      form.password
+    );
+
     navigate('/login');
   } catch (err) {
-    setError(err.response?.data?.message || 'Signup failed.');
+    setError(
+      err.response?.data?.message || 'Signup failed.'
+    );
   } finally {
     setLoading(false);
   }
