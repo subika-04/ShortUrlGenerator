@@ -49,10 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
     const { data } = await api.post('/api/auth/signup', { name, email, password });
-    localStorage.setItem('snip_token', data.token);
     localStorage.setItem('snip_user',data.user);
-    api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-    setToken(data.token);
     setUser(data.user);
     return data;
   };
