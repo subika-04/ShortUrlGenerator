@@ -8,6 +8,7 @@ const generateToken = (userId) => {
 // POST /api/auth/signup
 const signup = async (req, res) => {
   try {
+    FileSystem.out.println("Request came to signup");
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {

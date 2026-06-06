@@ -23,6 +23,7 @@ app.get('/api/debug', (req, res) => {
 let authRoutes;
 try {
   authRoutes = require('./routes/auth');
+  console.log("Sign up request reached server");
   app.use('/api/auth', authRoutes);
   console.log('Auth routes OK');
 } catch (err) {
