@@ -44,7 +44,7 @@ export default function BulkCSVForm({ onSuccess }) {
   const copyAll = async () => {
     if (!results?.urls) 
       {
-        alert(results);
+        alert("Links has been added to Your Links");
         return;
       }
     const text = results.urls.map(u => `${window.location.origin}/${u.shortCode}`).join('\n');

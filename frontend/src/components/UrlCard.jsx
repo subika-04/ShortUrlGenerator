@@ -43,6 +43,12 @@ export default function UrlCard({ url, onDelete, onUpdate }) {
     setShowMenu(false);
   };
 
+  const isSuspended =
+    url.suspendFrom &&
+    url.suspendUntil &&
+    new Date() >= new Date(url.suspendFrom) &&
+    new Date() <= new Date(url.suspendUntil);
+
   return (
     <>
       <motion.div
@@ -50,62 +56,49 @@ export default function UrlCard({ url, onDelete, onUpdate }) {
         animate={{ opacity: 1, y: 0 }}
         className="card p-4 hover:shadow-lg transition-all duration-200"
       >
-        <div className="flex items-start gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <Link
-                to={`/analytics/${url._id}`}
-                className="font-mono font-semibold text-primary-600 dark:text-primary-400 hover:underline"
-              >
-                /{url.shortCode}
-              </Link>
-              {url.isActive === false && <Badge variant="danger" size="sm">Inactive</Badge>}
-              {url.isExpired && <Badge variant="warning" size="sm">Expired</Badge>}
-              {url.suspendFrom && url.suspendUntil && new Date() >= new Date(url.suspendFrom) && new Date() <= new Date(url.suspendUntil) && (
-                <Badge variant="danger" size="sm">Suspended</Badge>
-              )}
-            </div>
-            
-            <p className="text-sm text-surface-600 dark:text-dark-400 truncate mb-2">{url.originalUrl}</p>
-            
-            <div className="flex items-center gap-4 text-xs text-surface-500 dark:text-dark-500">
-              <span className="flex items-center gap-1">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                {url.clickCount} clicks
-              </span>
-              <span>Created {formatDate(url.createdAt)}</span>
-              {url.expiresAt && <span>Expires {formatDate(url.expiresAt)}</span>}
-            </div>
+        {/* ── Top row: short code + badges + menu ── */}
+        <div className="flex items-start justify-between gap-2 mb-2">
+          {/* Left: short code + status badges */}
+          <div className="flex items-center gap-2 flex-wrap min-w-0">
+            <Link
+              to={`/analytics/${url._id}`}
+              className="font-mono font-semibold text-primary-600 dark:text-primary-400 hover:underline whitespace-nowrap"
+            >
+              /{url.shortCode}
+            </Link>
+            {url.isActive === false && <Badge variant="danger" size="sm">Inactive</Badge>}
+            {url.isExpired && <Badge variant="warning" size="sm">Expired</Badge>}
+            {isSuspended && <Badge variant="danger" size="sm">Suspended</Badge>}
           </div>
 
-          <div className="flex items-center gap-1">
-            <div className="flex items-center gap-1 px-2 py-1.5 bg-surface-200 dark:bg-dark-700 rounded-lg">
-              <span className="font-mono text-xs text-surface-700 dark:text-dark-300">{shortUrl}</span>
-              <CopyButton text={shortUrl} />
-            </div>
+          {/* Right: three-dot menu — always top-right */}
+          <div className="relative flex-shrink-0">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="btn-icon"
+              aria-label="More options"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
+              </svg>
+            </button>
 
-            <div className="relative">
-              <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="btn-icon"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1" />
-                  <circle cx="12" cy="5" r="1" />
-                  <circle cx="12" cy="19" r="1" />
-                </svg>
-              </button>
-
-              <AnimatePresence>
-                {showMenu && (
+            <AnimatePresence>
+              {showMenu && (
+                <>
+                  {/* Click-away backdrop */}
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowMenu(false)}
+                  />
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-1 w-36 card-glass py-1 z-10"
+                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                    transition={{ duration: 0.12 }}
+                    className="absolute right-0 top-full mt-1 w-36 card-glass py-1 z-20 shadow-xl"
                   >
                     <button
                       onClick={() => { setShowEdit(true); setShowMenu(false); }}
@@ -144,8 +137,9 @@ export default function UrlCard({ url, onDelete, onUpdate }) {
                       className="w-full px-3 py-2 text-left text-sm text-surface-700 dark:text-dark-300 hover:bg-surface-200 dark:hover:bg-dark-700 flex items-center gap-2"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <line x1="18" y1="20" x2="18" y2="10" />
+                        <line x1="12" y1="20" x2="12" y2="4" />
+                        <line x1="6" y1="20" x2="6" y2="14" />
                       </svg>
                       Stats
                     </button>
@@ -153,7 +147,7 @@ export default function UrlCard({ url, onDelete, onUpdate }) {
                     <button
                       onClick={handleDelete}
                       disabled={deleting}
-                      className="w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2"
+                      className="w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2 disabled:opacity-50"
                     >
                       {deleting ? (
                         <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
@@ -169,9 +163,43 @@ export default function UrlCard({ url, onDelete, onUpdate }) {
                       Delete
                     </button>
                   </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* ── Original URL ── */}
+        <p className="text-sm text-surface-600 dark:text-dark-400 truncate mb-3">
+          {url.originalUrl}
+        </p>
+
+        {/* ── Bottom row: short URL pill + meta info ──
+            On mobile: stacks vertically
+            On sm+: side by side
+        */}
+        <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3">
+          {/* Short URL copy pill — full width on mobile, auto on sm+ */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-200 dark:bg-dark-700 rounded-lg min-w-0 w-full xs:w-auto">
+            <span className="font-mono text-xs text-surface-700 dark:text-dark-300 truncate flex-1 xs:flex-none xs:max-w-[200px] sm:max-w-[280px]">
+              {shortUrl}
+            </span>
+            <CopyButton text={shortUrl} />
+          </div>
+
+          {/* Meta: clicks · created · expires */}
+          <div className="flex items-center gap-3 text-xs text-surface-500 dark:text-dark-500 flex-wrap">
+            <span className="flex items-center gap-1 whitespace-nowrap">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {url.clickCount} clicks
+            </span>
+            <span className="whitespace-nowrap">Created {formatDate(url.createdAt)}</span>
+            {url.expiresAt && (
+              <span className="whitespace-nowrap">Expires {formatDate(url.expiresAt)}</span>
+            )}
           </div>
         </div>
       </motion.div>
