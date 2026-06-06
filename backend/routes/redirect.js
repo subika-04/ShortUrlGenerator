@@ -78,7 +78,9 @@ router.get('/:shortCode', async (req, res) => {
     const deviceType = getDeviceType(userAgent);
     const browser = getBrowser(userAgent);
     const operatingSystem = getOperatingSystem(userAgent);
-    const fingerprint = `${ip}-${userAgent.substring(0, 50)}`;
+    
+    // ✅ CHANGE THIS LINE - IP only
+    const fingerprint = ip;  // Just IP, not IP + userAgent
 
     const existingVisit = await Visit.findOne({ urlId: url._id, fingerprint: fingerprint });
     const isUnique = !existingVisit;

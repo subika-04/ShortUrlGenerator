@@ -300,7 +300,14 @@ const getPublicStats = async (req, res) => {
       return res.status(404).json({ message: 'URL not found.' });
     }
     
-    // ✅ Add dailyClicks aggregation
+    // ✅ Get visits to count unique visitors
+    const visits = await Visit.find({ urlId: url._id }).lean();
+    
+    // ✅ Count unique visitors by fingerprint
+    const uniqueFingerprints = new Set(visits.map(v => v.fingerprint).filter(Boolean));
+    const uniqueVisitors = uniqueFingerprints.size;
+    
+    // Daily clicks aggregation
     const dailyClicks = await Visit.aggregate([
       { $match: { urlId: url._id } },
       { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } }, count: { $sum: 1 } } },
@@ -312,8 +319,9 @@ const getPublicStats = async (req, res) => {
       shortCode: url.shortCode,
       originalUrl: url.originalUrl,
       clickCount: url.clickCount || 0,
+      uniqueVisitors: uniqueVisitors || 0,  // ✅ Add this!
       createdAt: url.createdAt,
-      dailyClicks,  // ✅ Include this!
+      dailyClicks,
     });
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch public stats.' });
