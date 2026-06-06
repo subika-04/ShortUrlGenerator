@@ -42,7 +42,11 @@ export default function BulkCSVForm({ onSuccess }) {
   };
 
   const copyAll = async () => {
-    if (!results?.urls) return;
+    if (!results?.urls) 
+      {
+        alert(results);
+        return;
+      }
     const text = results.urls.map(u => `${window.location.origin}/${u.shortCode}`).join('\n');
     await navigator.clipboard.writeText(text);
   };
